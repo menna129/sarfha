@@ -5,7 +5,7 @@ import "./App.css";
 const products = [
   {
     id: 1,
-    name: "Extra Virgin Olive Oil",
+    name: "Extra Virgin Olive oil.png",
     ar: "زيت زيتون بكر ممتاز",
     category: "Food",
     categoryAr: "منتجات غذائية",
@@ -56,7 +56,9 @@ const products = [
 function App() {
   const [lang, setLang] = useState("ar");
   const [category, setCategory] = useState("All");
-
+  const [selectedProduct, setSelectedProduct] = useState(null);
+const [cart, setCart] = useState([]);
+  
   const isAr = lang === "ar";
 
   const filteredProducts =
@@ -190,10 +192,45 @@ function App() {
 
           <div className="product-grid">
             {filteredProducts.map((product) => (
+
+
+
               <article className="product-card" key={product.id}>
                 <div className="product-image">
-                  <span className="product-emoji">{product.icon}</span>
-                  <span className="discount">{product.discount === "New" ? (isAr ? "جديد" : "New") : `-${product.discount}`}</span>
+                 
+            {product.id === 1 ? (
+  <img
+    className="product-photo"
+    src="/Olive-oil.png"
+    alt="OLIVERA Olive Oil"
+  />
+
+
+
+) : product.id === 2 ? (
+  <img
+    className="product-photo"
+    src="/croisant.png"
+    alt="Croissant"
+  />
+) : product.id === 3 ? (
+  <img
+    className="product-photo"
+    src="/Blender.png"
+    alt="Electric Blender"
+  />
+
+  ) : product.id === 4 ? (
+  <img
+    className="product-photo"
+    src="/Honey.png"
+    alt="Natural Honey"
+  />
+) : (
+  <span className="product-emoji">{product.icon}</span>
+)}
+
+
                 </div>
                 <div className="product-info">
                   <small>{isAr ? product.categoryAr : product.category}</small>
@@ -205,18 +242,93 @@ function App() {
                   <p className="expiry">
                     ⏳ {isAr ? "الصلاحية / الحالة:" : "Expiry / Condition:"} {product.expiry}
                   </p>
-
-                  <button
+<button
   className="buy-btn"
-  onClick={() => alert(product.name)}
+  onClick={() => setSelectedProduct(product)}
 >
   {isAr ? "عرض التفاصيل" : "View Details"}
 </button>
+              
                 </div>
               </article>
             ))}
           </div>
         </section>
+
+{selectedProduct && (
+  <div className="modal-overlay">
+    <div className="product-modal">
+
+      <button
+        className="modal-close"
+        onClick={() => setSelectedProduct(null)}
+      >
+        ×
+      </button>
+
+      <div className="modal-image">
+        <span>{selectedProduct.icon}</span>
+        <span className="discount">
+          {selectedProduct.discount === "New"
+            ? (isAr ? "جديد" : "New")
+            : `-${selectedProduct.discount}`}
+        </span>
+      </div>
+
+      <div className="modal-content">
+        <small>
+          {isAr
+            ? selectedProduct.categoryAr
+            : selectedProduct.category}
+        </small>
+
+        <h2>
+          {isAr
+            ? selectedProduct.ar
+            : selectedProduct.name}
+        </h2>
+
+        <div className="price-row">
+          <strong>
+            {selectedProduct.price} {isAr ? "ج.م" : "EGP"}
+          </strong>
+          <del>
+            {selectedProduct.oldPrice} {isAr ? "ج.م" : "EGP"}
+          </del>
+        </div>
+
+        <p>
+          {isAr ? "الصلاحية / الحالة: " : "Expiry / Condition: "}
+          {selectedProduct.expiry}
+        </p>
+
+        <p>
+          {isAr
+            ? "منتج متاح ضمن عروض صرفها. اغتنم الفرصة ووفر في مشترياتك."
+            : "Available through Sarfha offers. Shop smart and save."}
+        </p>
+
+        <button
+          className="buy-btn"
+          onClick={() => {
+            setCart([...cart, selectedProduct]);
+            alert(isAr ? "تمت الإضافة للسلة" : "Added to cart");
+            setSelectedProduct(null);
+          }}
+        >
+          {isAr ? "أضف إلى السلة" : "Add to Cart"}
+        </button>
+
+        <button
+          className="modal-back"
+          onClick={() => setSelectedProduct(null)}
+        >
+          {isAr ? "إغلاق" : "Close"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
         <section className="about-section" id="about">
           <span className="eyebrow">{isAr ? "رسالتنا" : "OUR MISSION"}</span>
