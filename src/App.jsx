@@ -210,20 +210,20 @@ const [cart, setCart] = useState([]);
 ) : product.id === 2 ? (
   <img
     className="product-photo"
-    src="/sarfha/croisant.png"
+    src="/croisant.png"
     alt="Croissant"
   />
 ) : product.id === 3 ? (
   <img
     className="product-photo"
-    src="/sarfha/Blender.png"
+    src="/Blender.png"
     alt="Electric Blender"
   />
 
   ) : product.id === 4 ? (
   <img
     className="product-photo"
-    src="/sarfha/Honey.png"
+    src="/Honey.png"
     alt="Natural Honey"
   />
 ) : (
