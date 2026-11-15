@@ -210,20 +210,21 @@ const [cart, setCart] = useState([]);
 ) : product.id === 2 ? (
   <img
     className="product-photo"
-    src="/croisant.png"
+    src={`${import.meta.env.BASE_URL}croisant.png`}
+
     alt="Croissant"
   />
 ) : product.id === 3 ? (
   <img
     className="product-photo"
-    src="/Blender.png"
-    alt="Electric Blender"
+
+src={`${import.meta.env.BASE_URL}Blender.png`}    alt="Electric Blender"
   />
 
   ) : product.id === 4 ? (
   <img
     className="product-photo"
-    src="/Honey.png"
+    src={`${import.meta.env.BASE_URL}Honey.png`}
     alt="Natural Honey"
   />
 ) : (
