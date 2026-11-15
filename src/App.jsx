@@ -2,10 +2,11 @@
 import { useState } from "react";
 import "./App.css";
 
+
 const products = [
   {
     id: 1,
-    name: "Extra Virgin Olive oil.png",
+    name: "Extra Virgin Olive oil",
     ar: "زيت زيتون بكر ممتاز",
     category: "Food",
     categoryAr: "منتجات غذائية",
@@ -14,6 +15,7 @@ const products = [
     discount: "40%",
     expiry: "30 Nov 2026",
     icon: "🫒",
+    image: "Olive-oil.png",
   },
   {
     id: 2,
@@ -26,6 +28,7 @@ const products = [
     discount: "50%",
     expiry: "15 Nov 2026",
     icon: "🥐",
+    image: "croisant.png",
   },
   {
     id: 3,
@@ -38,6 +41,7 @@ const products = [
     discount: "29%",
     expiry: "New",
     icon: "🔌",
+    image: "Blender.png",
   },
   {
     id: 4,
@@ -50,9 +54,126 @@ const products = [
     discount: "31%",
     expiry: "20 Dec 2026",
     icon: "🍯",
+    image: "Honey.png",
+  },
+  {
+    id: 5,
+    name: "Industrial Meat Grinder",
+    ar: "مفرمة لحوم صناعية",
+    category: "Electronics",
+    categoryAr: "أجهزة مطبخ",
+    oldPrice: 22000,
+    price: 18500,
+    discount: "16%",
+    expiry: "New",
+    icon: "🥩",
+    image: "Meat-Grinder.png",
+  },
+  {
+    id: 6,
+    name: "Ariston Water Heater",
+    ar: "سخان مياه أريستون",
+    category: "Electronics",
+    categoryAr: "أجهزة منزلية",
+    oldPrice: 4800,
+    price: 4000,
+    discount: "17%",
+    expiry: "New",
+    icon: "🚿",
+    image: "Ariston-Heater.png",
+  },
+  {
+    id: 7,
+    name: "Electric Waffle Maker",
+    ar: "ماكينة وافل كهربائية",
+    category: "Electronics",
+    categoryAr: "أجهزة مطبخ",
+    oldPrice: 1800,
+    price: 1500,
+    discount: "17%",
+    expiry: "New",
+    icon: "🧇",
+    image: "Waffle-Maker.png",
+  },
+  {
+    id: 8,
+    name: "Keplin Soup Maker",
+    ar: "جهاز تحضير الشوربة Keplin",
+    category: "Electronics",
+    categoryAr: "أجهزة مطبخ",
+    oldPrice: 6000,
+    price: 5000,
+    discount: "17%",
+    expiry: "New",
+    icon: "🥣",
+    image: "Keplin-Soup-Maker.png",
+  },
+  {
+    id: 9,
+    name: "KitchenAid Artisan Mixer",
+    ar: "عجان كيتشن إيد أرتيزان",
+    category: "Electronics",
+    categoryAr: "أجهزة مطبخ",
+    oldPrice: 54000,
+    price: 45000,
+    discount: "17%",
+    expiry: "New",
+    icon: "🍰",
+    image: "KitchenAid-Mixer.png",
+  },
+  {
+    id: 10,
+    name: "Folding Ironing Board",
+    ar: "ترابيزة مكواة قابلة للطي",
+    category: "Electronics",
+    categoryAr: "مستلزمات منزلية",
+    oldPrice: 1450,
+    price: 1200,
+    discount: "17%",
+    expiry: "New",
+    icon: "👕",
+    image: "Ironing-Board.png",
+  },
+  {
+    id: 11,
+    name: "LED Desk Lamp",
+    ar: "مصباح مكتب LED",
+    category: "Electronics",
+    categoryAr: "إضاءة ومستلزمات مكتبية",
+    oldPrice: 950,
+    price: 800,
+    discount: "16%",
+    expiry: "New",
+    icon: "💡",
+    image: "Desk-Lamp.png",
+  },
+  {
+    id: 13,
+    name: "Dell Laptop",
+    ar: "لابتوب Dell",
+    category: "Electronics",
+    categoryAr: "أجهزة إلكترونية",
+    oldPrice: 30000,
+    price: 25000,
+    discount: "17%",
+    expiry: "New",
+    icon: "💻",
+    image: "Dell-Laptop.png",
+  },
+  {
+    id: 14,
+    name: "Mini Refrigerator",
+    ar: "ثلاجة ميني صغيرة",
+    category: "Electronics",
+    categoryAr: "أجهزة منزلية",
+    oldPrice: 10800,
+    price: 9000,
+    discount: "17%",
+    expiry: "New",
+    icon: "🧊",
+    image: "Mini-Fridge.png",
   },
 ];
-
 function App() {
   const [lang, setLang] = useState("ar");
   const [category, setCategory] = useState("All");
@@ -198,40 +319,11 @@ const [cart, setCart] = useState([]);
               <article className="product-card" key={product.id}>
                 <div className="product-image">
                  
-            {product.id === 1 ? (
-  <img
-    className="product-photo"
-    src="/sarfha/Olive-oil.png"
-    alt="OLIVERA Olive Oil"
-  />
-
-
-
-) : product.id === 2 ? (
-  <img
-    className="product-photo"
-    src={`${import.meta.env.BASE_URL}croisant.png`}
-
-    alt="Croissant"
-  />
-) : product.id === 3 ? (
-  <img
-    className="product-photo"
-
-src={`${import.meta.env.BASE_URL}Blender.png`}    alt="Electric Blender"
-  />
-
-  ) : product.id === 4 ? (
-  <img
-    className="product-photo"
-    src={`${import.meta.env.BASE_URL}Honey.png`}
-    alt="Natural Honey"
-  />
-) : (
-  <span className="product-emoji">{product.icon}</span>
-)}
-
-
+          <img
+  className="product-photo"
+  src={`${import.meta.env.BASE_URL}${product.image}`}
+  alt={isAr ? product.ar : product.name}
+/>
                 </div>
                 <div className="product-info">
                   <small>{isAr ? product.categoryAr : product.category}</small>
