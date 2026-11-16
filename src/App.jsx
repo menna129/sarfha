@@ -1,7 +1,8 @@
 
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
-
+import Login from "./pages/Login";
 
 const products = [
   {
@@ -174,11 +175,12 @@ const products = [
     image: "Mini-Fridge.png",
   },
 ];
-function App() {
+function HomePage() {
   const [lang, setLang] = useState("ar");
   const [category, setCategory] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState(null);
 const [cart, setCart] = useState([]);
+const [showCart, setShowCart] = useState(false);
   
   const isAr = lang === "ar";
 
@@ -188,31 +190,92 @@ const [cart, setCart] = useState([]);
       : products.filter((p) => p.category === category);
 
   return (
-    <div className={isAr ? "app arabic" : "app english"} dir={isAr ? "rtl" : "ltr"}>
-      <header className="navbar">
-        <a className="brand" href="#">
-          <span className="brand-icon">♻</span>
-          <span>
-            <strong>صرفها</strong>
-            <small>Sarrafha</small>
-          </span>
-        </a>
+   <div className={isAr ? "app arabic" : "app english"} dir={isAr ? "rtl" : "ltr"}>
 
-        <nav>
-          <a href="#home">{isAr ? "الرئيسية" : "Home"}</a>
-          <a href="#products">{isAr ? "المنتجات" : "Products"}</a>
-          <a href="#about">{isAr ? "عن صرفها" : "About Us"}</a>
-        </nav>
+  <header className="navbar">
+    <a className="brand" href="#">
+      <span className="brand-icon">♻</span>
+      <span>
+        <strong>صرفها</strong>
+        <small>Sarrafha</small>
+      </span>
+    </a>
 
-        <div className="nav-actions">
-          <button className="language-btn" onClick={() => setLang(isAr ? "en" : "ar")}>
-            {isAr ? "EN" : "عربي"}
-          </button>
-          <a href="#login" className="login-btn">
-            {isAr ? "تسجيل الدخول" : "Login"}
-          </a>
-        </div>
-      </header>
+    <nav>
+      <a href="#home">{isAr ? "الرئيسية" : "Home"}</a>
+      <a href="#products">{isAr ? "المنتجات" : "Products"}</a>
+      <a href="#about">{isAr ? "عن صرفها" : "About Us"}</a>
+    </nav>
+
+    <div className="nav-actions">
+      <button className="language-btn" onClick={() => setLang(isAr ? "en" : "ar")}>
+        {isAr ? "EN" : "عربي"}
+      </button>
+
+<button className="cart-btn" onClick={() => setShowCart(true)}>
+  🛒 {isAr ? "السلة" : "Cart"} ({cart.reduce((sum, item) => sum + (item.quantity || 1), 0)})
+</button>
+      <Link to="/login" className="login-btn">
+  {isAr ? "تسجيل الدخول" : "Login"}
+</Link>
+    </div>
+  </header>
+
+  {showCart && (
+    <div className="modal-overlay">
+      <div className="product-modal">
+        <h2>{isAr ? "سلة التسوق" : "Shopping Cart"}</h2>
+
+        {cart.length === 0 ? (
+          <p>{isAr ? "السلة فارغة" : "Your cart is empty"}</p>
+        ) : (
+          <>
+         {cart.map((item, index) => (
+  <div className="cart-item" key={item.id}>
+    <span>{isAr ? item.ar : item.name}</span>
+
+    <strong>
+      {item.price * (item.quantity || 1)} {isAr ? "جنيه" : "EGP"}
+    </strong>
+
+    <div className="quantity-controls">
+      <button onClick={() =>
+        setCart(cart.map((p, i) =>
+          i === index ? { ...p, quantity: (p.quantity || 1) + 1 } : p
+        ))
+      }>+</button>
+
+      <span>{item.quantity || 1}</span>
+
+      <button onClick={() =>
+        setCart(cart.map((p, i) =>
+          i === index ? { ...p, quantity: Math.max(1, (p.quantity || 1) - 1) } : p
+        ))
+      }>-</button>
+
+      <button onClick={() =>
+        setCart(cart.filter((_, i) => i !== index))
+      }>
+        {isAr ? "حذف" : "Remove"}
+      </button>
+    </div>
+  </div>
+))}
+
+            <h3>
+              {isAr ? "الإجمالي: " : "Total: "}
+             {cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)} {isAr ? "جنيه" : "EGP"}
+
+            </h3>
+          </>
+        )}
+
+        <button className="modal-back" onClick={() => setShowCart(false)}>
+          {isAr ? "إغلاق" : "Close"}
+        </button>
+      </div>
+    </div>
+  )}
 
       <main>
         <section className="hero" id="home">
@@ -400,17 +463,31 @@ const [cart, setCart] = useState([]);
             ? "منتج متاح ضمن عروض صرفها. اغتنم الفرصة ووفر في مشترياتك."
             : "Available through Sarfha offers. Shop smart and save."}
         </p>
+<button
+  className="buy-btn"
+  onClick={() => {
+    setCart((currentCart) => {
+      const existing = currentCart.find(
+        (item) => item.id === selectedProduct.id
+      );
 
-        <button
-          className="buy-btn"
-          onClick={() => {
-            setCart([...cart, selectedProduct]);
-            alert(isAr ? "تمت الإضافة للسلة" : "Added to cart");
-            setSelectedProduct(null);
-          }}
-        >
-          {isAr ? "أضف إلى السلة" : "Add to Cart"}
-        </button>
+      if (existing) {
+        return currentCart.map((item) =>
+          item.id === selectedProduct.id
+            ? { ...item, quantity: (item.quantity || 1) + 1 }
+            : item
+        );
+      }
+
+      return [...currentCart, { ...selectedProduct, quantity: 1 }];
+    });
+
+    alert(isAr ? "تمت الإضافة للسلة" : "Added to cart");
+    setSelectedProduct(null);
+  }}
+>
+  {isAr ? "أضف إلى السلة" : "Add to Cart"}
+</button>
 
         <button
           className="modal-back"
@@ -445,4 +522,18 @@ const [cart, setCart] = useState([]);
   );
 }
 
+function App() {
+  return (
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
 export default App;
+
+
+
