@@ -156,3 +156,66 @@
     font-size: 24px;
   }
 }
+
+.account-type-options {
+  display: flex;
+  gap: 14px;
+  margin: 12px 0 22px;
+}
+
+.account-type-options label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 12px;
+  border: 1.5px solid #dce5dd;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #173d30;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.account-type-options label:has(input:checked) {
+  border-color: #103c2d;
+  background: #eef5ed;
+  color: #103c2d;
+}
+
+.account-type-options input {
+  width: 17px;
+  height: 17px;
+  accent-color: #103c2d;
+  cursor: pointer;
+}
+
+
+/* Remove Chrome blue autofill color */
+.signup-card input:-webkit-autofill,
+.signup-card input:-webkit-autofill:hover,
+.signup-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #173d30;
+  -webkit-box-shadow: 0 0 0 1000px #fbfcf9 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Account type hover */
+.account-type-options label:hover {
+  border-color: #91d65a;
+  background: #f4f9ef;
+}
+
+/* Selected account type */
+.account-type-options label:has(input:checked) {
+  border: 1.5px solid #91d65a;
+  background: #eef5ed;
+  color: #103c2d;
+}
+
+/* Smooth input transition */
+.signup-card input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}

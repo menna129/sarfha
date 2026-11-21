@@ -13,7 +13,8 @@
 .login-card {
   width: 100%;
   max-width: 460px;
-padding: 32px 38px;  background: #ffffff;
+  padding: 32px 38px;
+  background: #ffffff;
   border-radius: 24px;
   box-shadow: 0 15px 45px rgba(16, 60, 45, 0.12);
   text-align: center;
@@ -25,7 +26,8 @@ padding: 32px 38px;  background: #ffffff;
   gap: 10px;
   color: #103c2d;
   text-decoration: none;
-margin-bottom: 28px;}
+  margin-bottom: 28px;
+}
 
 .login-brand .brand-icon {
   font-size: 36px;
@@ -77,11 +79,21 @@ margin-bottom: 28px;}
   font-size: 14px;
   background: #fbfcf9;
   color: #173d30;
+  transition: 0.2s ease;
 }
 
 .login-card input:focus {
   border-color: #91d65a;
   box-shadow: 0 0 0 3px rgba(145, 214, 90, 0.15);
+}
+
+/* Fix Chrome Autofill blue background */
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #173d30;
+  -webkit-box-shadow: 0 0 0 1000px #fbfcf9 inset;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .password-field {
@@ -93,6 +105,7 @@ margin-bottom: 28px;}
 .password-field input {
   padding-inline-end: 65px;
 }
+
 .show-password {
   position: absolute;
   inset-inline-end: 12px;
@@ -104,6 +117,10 @@ margin-bottom: 28px;}
   font-size: 12px;
   font-weight: bold;
   padding: 5px;
+}
+
+.show-password:hover {
+  color: #91d65a;
 }
 
 .login-submit {
@@ -118,7 +135,7 @@ margin-bottom: 28px;}
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
 .login-submit:hover {
@@ -139,24 +156,15 @@ margin-bottom: 28px;}
   text-decoration: none;
 }
 
+.signup-text a:hover,
+.back-home:hover {
+  color: #91d65a;
+}
+
 .back-home {
   display: inline-block;
   margin-top: 15px;
   font-size: 14px;
-}
-
-.english {
-  font-family: "Inter", sans-serif;
-}
-
-@media (max-width: 480px) {
-  .login-card {
-    padding: 32px 22px;
-  }
-
-  .login-card h1 {
-    font-size: 25px;
-  }
 }
 
 .forgot-password {
@@ -172,5 +180,20 @@ margin-bottom: 28px;}
 }
 
 .forgot-password a:hover {
+  color: #91d65a;
   text-decoration: underline;
+}
+
+.english {
+  font-family: "Inter", sans-serif;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 22px;
+  }
+
+  .login-card h1 {
+    font-size: 25px;
+  }
 }

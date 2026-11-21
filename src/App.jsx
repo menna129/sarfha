@@ -1,9 +1,14 @@
 
-import { useState } from "react";
+import Signup from "./pages/Signup";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login";
-
+import SupplierDashboard from "./pages/SupplierDashboard";
+import AddProduct from "./pages/AddProduct";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import Checkout from "./pages/Checkout";
+import MyOrders from "./pages/MyOrders";
 const products = [
   {
     id: 1,
@@ -174,21 +179,32 @@ const products = [
     icon: "🧊",
     image: "Mini-Fridge.png",
   },
-];
-function HomePage() {
+  ];
+
+function HomePage({ cart, setCart, currentUser }) {
+  const [supplierProducts] = useState(() => {
+  try {
+    return JSON.parse(
+      localStorage.getItem("sarfha_supplier_products") || "[]"
+    );
+  } catch {
+    return [];
+  }
+});
+
+const allProducts = [...products, ...supplierProducts];
   const [lang, setLang] = useState("ar");
   const [category, setCategory] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState(null);
-const [cart, setCart] = useState([]);
-const [showCart, setShowCart] = useState(false);
-  
+  const [showCart, setShowCart] = useState(false);
+
+
+
   const isAr = lang === "ar";
-
-  const filteredProducts =
-    category === "All"
-      ? products
-      : products.filter((p) => p.category === category);
-
+const filteredProducts =
+  category === "All"
+    ? allProducts
+    : allProducts.filter((p) => p.category === category);
   return (
    <div className={isAr ? "app arabic" : "app english"} dir={isAr ? "rtl" : "ltr"}>
 
@@ -215,9 +231,22 @@ const [showCart, setShowCart] = useState(false);
 <button className="cart-btn" onClick={() => setShowCart(true)}>
   🛒 {isAr ? "السلة" : "Cart"} ({cart.reduce((sum, item) => sum + (item.quantity || 1), 0)})
 </button>
-      <Link to="/login" className="login-btn">
-  {isAr ? "تسجيل الدخول" : "Login"}
-</Link>
+{currentUser ? (
+  <Link
+    to={
+      currentUser.role === "supplier"
+        ? "/supplier-dashboard"
+        : "/customer-dashboard"
+    }
+    className="login-btn"
+  >
+    {isAr ? "حسابي" : "My Account"}
+  </Link>
+) : (
+  <Link to="/login" className="login-btn">
+    {isAr ? "تسجيل الدخول" : "Login"}
+  </Link>
+)}
     </div>
   </header>
 
@@ -262,11 +291,25 @@ const [showCart, setShowCart] = useState(false);
   </div>
 ))}
 
-            <h3>
-              {isAr ? "الإجمالي: " : "Total: "}
-             {cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)} {isAr ? "جنيه" : "EGP"}
+<div className="cart-total-section">
+  <h3>
+    {isAr ? "الإجمالي: " : "Total: "}
+    {cart.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+    )}{" "}
+    {isAr ? "جنيه" : "EGP"}
+  </h3>
 
-            </h3>
+  <Link
+    to="/checkout"
+    className="buy-btn"
+    onClick={() => setShowCart(false)}
+  >
+    {isAr ? "إتمام الطلب" : "Checkout"}
+  </Link>
+</div>
+
           </>
         )}
 
@@ -384,7 +427,11 @@ const [showCart, setShowCart] = useState(false);
                  
           <img
   className="product-photo"
-  src={`${import.meta.env.BASE_URL}${product.image}`}
+src={
+  product.image.startsWith("data:")
+    ? product.image
+    : `${import.meta.env.BASE_URL}${product.image}`
+}
   alt={isAr ? product.ar : product.name}
 />
                 </div>
@@ -422,14 +469,26 @@ const [showCart, setShowCart] = useState(false);
         ×
       </button>
 
-      <div className="modal-image">
-        <span>{selectedProduct.icon}</span>
-        <span className="discount">
-          {selectedProduct.discount === "New"
-            ? (isAr ? "جديد" : "New")
-            : `-${selectedProduct.discount}`}
-        </span>
-      </div>
+<div className="modal-image">
+  <img
+   src={
+  selectedProduct.image.startsWith("data:")
+    ? selectedProduct.image
+    : `${import.meta.env.BASE_URL}${selectedProduct.image}`
+}
+    alt={selectedProduct.name}
+    onError={(e) => {
+      e.currentTarget.style.display = "none";
+    }}
+  />
+
+  <span className="discount">
+    {selectedProduct.discount === "New"
+      ? (isAr ? "جديد" : "New")
+      : `-${selectedProduct.discount}`}
+  </span>
+</div>
+
 
       <div className="modal-content">
         <small>
@@ -522,18 +581,75 @@ const [showCart, setShowCart] = useState(false);
   );
 }
 
+
 function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("sarfhaCurrentUser")) || null;
+  } catch {
+    return null;
+  }
+});
+  const [cart, setCart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("sarrafha_cart")) || [];
+    } catch (error) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sarrafha_cart", JSON.stringify(cart));
+  }, [cart]);
+
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
+        
+        <Route
+  path="/"
+  element={
+    <HomePage
+      cart={cart}
+      setCart={setCart}
+      currentUser={currentUser}
+    />
+  }
+/>
+<Route
+  path="/login"
+  element={<Login onLogin={setCurrentUser} />}
+/>
+        <Route path="/signup" element={<Signup />} />
+        
+        <Route
+  path="/supplier-dashboard"
+  element={
+    <SupplierDashboard
+      onLogout={() => setCurrentUser(null)}
+    />
+  }
+/>
+<Route
+  path="/add-product"
+  element={<AddProduct />}
+/>
+<Route
+  path="/customer-dashboard"
+  element={<CustomerDashboard />}
+/>
+
+<Route
+  path="/checkout"
+  element={<Checkout cart={cart} setCart={setCart} />}
+/>
+<Route
+  path="/my-orders"
+  element={<MyOrders />}
+/>
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
-
-
-

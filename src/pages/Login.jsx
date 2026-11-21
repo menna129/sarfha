@@ -1,13 +1,117 @@
 
+
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
-function Login({ isAr = true }) {
+async function hashPassword(password, salt) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const hash = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: new Uint8Array(salt),
+      iterations: 150000,
+      hash: "SHA-256",
+    },
+    key,
+    256
+  );
+
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function Login({ isAr = true, onLogin }) {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const users = JSON.parse(
+        localStorage.getItem("sarfhaUsers") || "[]"
+      );
+
+      const normalizedEmail = email.trim().toLowerCase();
+
+      const user = users.find(
+        (item) => item.email === normalizedEmail
+      );
+
+      if (!user) {
+        setError(
+          isAr
+            ? "البريد الإلكتروني غير مسجل"
+            : "Email is not registered"
+        );
+        return;
+      }
+
+      const enteredHash = await hashPassword(password, user.salt);
+
+      if (enteredHash !== user.passwordHash) {
+        setError(
+          isAr
+            ? "كلمة المرور غير صحيحة"
+            : "Incorrect password"
+        );
+        return;
+      }
+
+      const loggedInUser = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role || "customer",
+      };
+
+      localStorage.setItem(
+        "sarfhaCurrentUser",
+        JSON.stringify(loggedInUser)
+      );
+
+      onLogin?.(loggedInUser);
+
+      alert(
+        isAr
+          ? "تم تسجيل الدخول بنجاح!"
+          : "Login successful!"
+      );
+
+      if (loggedInUser.role === "supplier") {
+        navigate("/supplier-dashboard");
+      } else {
+        navigate("/customer-dashboard");
+      }
+    } catch (err) {
+      setError(
+        isAr
+          ? "حدث خطأ أثناء تسجيل الدخول"
+          : "Login error occurred"
+      );
+    }
+  };
 
   return (
-    <div className={`login-page ${isAr ? "arabic" : "english"}`} dir={isAr ? "rtl" : "ltr"}>
+    <div
+      className={`login-page ${isAr ? "arabic" : "english"}`}
+      dir={isAr ? "rtl" : "ltr"}
+    >
       <div className="login-card">
 
         <Link to="/" className="login-brand">
@@ -26,12 +130,15 @@ function Login({ isAr = true }) {
             : "Sign in and enjoy shopping at special prices"}
         </p>
 
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={handleLogin}>
           <label>
             {isAr ? "البريد الإلكتروني" : "Email Address"}
           </label>
+
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email"}
             required
           />
@@ -43,6 +150,8 @@ function Login({ isAr = true }) {
           <div className="password-field">
             <input
               type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder={isAr ? "أدخل كلمة المرور" : "Enter your password"}
               required
             />
@@ -57,11 +166,19 @@ function Login({ isAr = true }) {
                 : (isAr ? "إظهار" : "Show")}
             </button>
           </div>
-<div className="forgot-password">
-  <a href="#forgot-password">
-    {isAr ? "نسيت كلمة المرور؟" : "Forgot Password?"}
-  </a>
-</div>
+
+          {error && (
+            <p style={{ color: "#c0392b", marginTop: "12px" }}>
+              {error}
+            </p>
+          )}
+
+          <div className="forgot-password">
+            <a href="#forgot-password">
+              {isAr ? "نسيت كلمة المرور؟" : "Forgot Password?"}
+            </a>
+          </div>
+
           <button type="submit" className="login-submit">
             {isAr ? "تسجيل الدخول" : "Login"}
           </button>
@@ -84,4 +201,3 @@ function Login({ isAr = true }) {
 }
 
 export default Login;
-

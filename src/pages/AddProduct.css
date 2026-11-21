@@ -1,0 +1,197 @@
+
+.add-product-page {
+  min-height: 100vh;
+  background: #f6f7f1;
+  color: #173d30;
+  font-family: "Cairo", sans-serif;
+  padding-bottom: 50px;
+}
+
+.add-product-header {
+  background: #103c2d;
+  padding: 20px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.add-product-header h2 {
+  color: #fff;
+  font-size: 23px;
+  margin: 0;
+}
+
+.add-product-header button {
+  background: #91d65a;
+  color: #103c2d;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-product-content {
+  max-width: 850px;
+  margin: 45px auto;
+  padding: 0 20px;
+}
+
+.add-product-content h1 {
+  text-align: center;
+  color: #103c2d;
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+.add-product-content form {
+  background: #fff;
+  padding: 35px;
+  border-radius: 20px;
+  border: 1px solid #dce7dc;
+  box-shadow: 0 8px 30px rgba(16, 60, 45, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-product-content form label {
+  color: #103c2d;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.add-product-content form input:not([type="file"]),
+.add-product-content form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 15px;
+  border: 1px solid #b9cbbb !important;
+  border-radius: 10px;
+  background: #fff !important;
+  background-color: #fff !important;
+  color: #173d30 !important;
+  -webkit-text-fill-color: #173d30 !important;
+  opacity: 1 !important;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  box-shadow: none;
+}
+
+.add-product-content form input::placeholder {
+  color: #718477 !important;
+  opacity: 1;
+}
+
+.add-product-content form input:focus,
+.add-product-content form select:focus {
+  border-color: #4d9b52 !important;
+  box-shadow: 0 0 0 3px rgba(77, 155, 82, 0.15);
+}
+
+.add-product-content form input[type="file"] {
+  padding: 12px;
+  border: 1px dashed #a8bbaa;
+  border-radius: 10px;
+  background: #f9fbf7;
+  color: #173d30;
+  cursor: pointer;
+}
+
+.add-product-preview {
+  width: 180px;
+  height: 160px;
+  object-fit: contain;
+  background: #f6f7f1;
+  border: 1px solid #e5ece5;
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: 10px;
+}
+
+.add-product-content form button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: #103c2d;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.add-product-content form button:hover {
+  background: #245b43;
+}
+
+@media (max-width: 600px) {
+  .add-product-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-product-content {
+    margin-top: 25px;
+  }
+
+  .add-product-content form {
+    padding: 22px;
+  }
+}
+
+
+.add-product-content form input:not([type="file"]),
+.add-product-content form select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #173d30 !important;
+  -webkit-text-fill-color: #173d30 !important;
+  border: 2px solid #a9bcae !important;
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.add-product-content form input:-webkit-autofill,
+.add-product-content form input:-webkit-autofill:hover,
+.add-product-content form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #173d30 !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+/* Custom file upload button */
+.add-product-content form input[type="file"] {
+  color: #173d30;
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add-product-content form input[type="file"]::file-selector-button {
+  background: #103c2d;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-left: 12px;
+  font-family: "Cairo", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-product-content form input[type="file"]::file-selector-button:hover {
+  background: #245b43;
+}
