@@ -685,3 +685,288 @@ a {
 .cart-modal > button {
   margin-top: 22px;
 }
+
+
+/* =========================
+   MOBILE RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Hero Section */
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 45px 6% 35px;
+    min-height: auto;
+    text-align: center;
+  }
+
+  .hero-content {
+    order: 1;
+    max-width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(30px, 8vw, 40px);
+    line-height: 1.5;
+    margin: 18px 0;
+  }
+
+  .hero-content > p {
+    font-size: 15px;
+    line-height: 1.9;
+    margin: auto;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+  }
+
+  .hero-actions {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    padding: 11px 20px;
+    font-size: 14px;
+  }
+
+  .hero-stats {
+    justify-content: center;
+    gap: 25px;
+    margin-top: 25px;
+  }
+
+  .hero-stats strong {
+    font-size: 22px;
+  }
+
+  .hero-visual {
+    order: 2;
+    min-height: 250px;
+    border-radius: 25px;
+  }
+
+  .visual-circle {
+    width: 165px;
+    height: 165px;
+  }
+
+  .visual-circle span {
+    font-size: 85px;
+  }
+
+  .floating-card {
+    bottom: 10px;
+    right: 50%;
+    transform: translateX(50%);
+    padding: 10px 14px;
+    width: max-content;
+    max-width: 90%;
+  }
+
+  .visual-caption {
+    top: 12px;
+    font-size: 11px;
+  }
+
+  /* Features */
+  .features {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px 6%;
+  }
+
+  .features > div {
+    justify-content: flex-start;
+    padding: 14px;
+  }
+
+  /* Products */
+  .products-section {
+    padding: 45px 4%;
+  }
+
+  .section-heading {
+    display: block;
+    text-align: center;
+    margin-bottom: 22px;
+  }
+
+  .section-heading h2 {
+    font-size: 25px;
+  }
+
+  .section-heading p {
+    font-size: 14px;
+  }
+
+  .filters {
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .filter {
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .product-card {
+    min-width: 0;
+    border-radius: 14px;
+  }
+
+  .product-image {
+    height: 135px;
+  }
+
+  .product-photo {
+    padding: 8px;
+  }
+
+  .product-emoji {
+    font-size: 55px;
+  }
+
+  .product-card .buy-btn {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+
+  .product-info {
+    padding: 10px;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .product-info small {
+    font-size: 12px;
+  }
+
+  /* Modals */
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .product-modal {
+    max-height: 85vh;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 21px;
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 25px 6%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .product-grid {
+    gap: 8px;
+  }
+
+  .product-image {
+    height: 115px;
+  }
+
+  .product-info {
+    padding: 8px 5px;
+  }
+
+  .hero h1 {
+    font-size: 29px;
+  }
+}
+
+/* Mobile Navigation */
+
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid #ffffff50;
+  color: white;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    height: auto;
+    min-height: 75px;
+    padding: 12px 5%;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand strong {
+    font-size: 21px;
+  }
+
+  .brand-icon {
+    font-size: 32px;
+  }
+
+  .brand small {
+    font-size: 11px;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .navbar nav,
+  .navbar .nav-actions {
+    display: none;
+    width: 100%;
+  }
+
+  .navbar.menu-open nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 15px 0;
+    border-top: 1px solid #ffffff25;
+    font-size: 16px;
+  }
+
+  .navbar.menu-open .nav-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-bottom: 10px;
+  }
+
+  .navbar.menu-open .nav-actions button,
+  .navbar.menu-open .nav-actions a {
+    text-align: center;
+    width: 100%;
+  }
+}

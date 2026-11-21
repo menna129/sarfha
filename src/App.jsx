@@ -182,6 +182,7 @@ const products = [
   ];
 
 function HomePage({ cart, setCart, currentUser }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [supplierProducts] = useState(() => {
   try {
     return JSON.parse(
@@ -208,47 +209,82 @@ const filteredProducts =
   return (
    <div className={isAr ? "app arabic" : "app english"} dir={isAr ? "rtl" : "ltr"}>
 
-  <header className="navbar">
-    <a className="brand" href="#">
-      <span className="brand-icon">♻</span>
-      <span>
-        <strong>صرفها</strong>
-        <small>Sarrafha</small>
-      </span>
-    </a>
+<header className={`navbar ${menuOpen ? "menu-open" : ""}`}>
+  <a className="brand" href="#home" onClick={() => setMenuOpen(false)}>
+    <span className="brand-icon">♻</span>
+    <span>
+      <strong>صرفها</strong>
+      <small>Sarrafha</small>
+    </span>
+  </a>
 
-    <nav>
-      <a href="#home">{isAr ? "الرئيسية" : "Home"}</a>
-      <a href="#products">{isAr ? "المنتجات" : "Products"}</a>
-      <a href="#about">{isAr ? "عن صرفها" : "About Us"}</a>
-    </nav>
-
-    <div className="nav-actions">
-      <button className="language-btn" onClick={() => setLang(isAr ? "en" : "ar")}>
-        {isAr ? "EN" : "عربي"}
-      </button>
-
-<button className="cart-btn" onClick={() => setShowCart(true)}>
-  🛒 {isAr ? "السلة" : "Cart"} ({cart.reduce((sum, item) => sum + (item.quantity || 1), 0)})
-</button>
-{currentUser ? (
-  <Link
-    to={
-      currentUser.role === "supplier"
-        ? "/supplier-dashboard"
-        : "/customer-dashboard"
-    }
-    className="login-btn"
+  <button
+    className="menu-toggle"
+    type="button"
+    onClick={() => setMenuOpen(!menuOpen)}
+    aria-label="Toggle menu"
   >
-    {isAr ? "حسابي" : "My Account"}
-  </Link>
-) : (
-  <Link to="/login" className="login-btn">
-    {isAr ? "تسجيل الدخول" : "Login"}
-  </Link>
-)}
-    </div>
-  </header>
+    {menuOpen ? "✕" : "☰"}
+  </button>
+
+  <nav>
+    <a href="#home" onClick={() => setMenuOpen(false)}>
+      {isAr ? "الرئيسية" : "Home"}
+    </a>
+    <a href="#products" onClick={() => setMenuOpen(false)}>
+      {isAr ? "المنتجات" : "Products"}
+    </a>
+    <a href="#about" onClick={() => setMenuOpen(false)}>
+      {isAr ? "عن صرفها" : "About Us"}
+    </a>
+  </nav>
+
+  <div className="nav-actions">
+    <button
+      className="language-btn"
+      onClick={() => {
+        setLang(isAr ? "en" : "ar");
+        setMenuOpen(false);
+      }}
+    >
+      {isAr ? "EN" : "عربي"}
+    </button>
+
+    <button
+      className="cart-btn"
+      onClick={() => {
+        setShowCart(true);
+        setMenuOpen(false);
+      }}
+    >
+      🛒 {isAr ? "السلة" : "Cart"} (
+      {cart.reduce((sum, item) => sum + (item.quantity || 1), 0)})
+    </button>
+
+    {currentUser ? (
+      <Link
+        to={
+          currentUser.role === "supplier"
+            ? "/supplier-dashboard"
+            : "/customer-dashboard"
+        }
+        className="login-btn"
+        onClick={() => setMenuOpen(false)}
+      >
+        {isAr ? "حسابي" : "My Account"}
+      </Link>
+    ) : (
+      <Link
+        to="/login"
+        className="login-btn"
+        onClick={() => setMenuOpen(false)}
+      >
+        {isAr ? "تسجيل الدخول" : "Login"}
+      </Link>
+    )}
+  </div>
+</header>
+
 
   {showCart && (
     <div className="modal-overlay">
