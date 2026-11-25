@@ -1,3 +1,6 @@
+
+
+
 name: Deploy Sarfha Website
 
 on:
@@ -17,10 +20,10 @@ concurrency:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
 
     steps:
       - name: Get project
@@ -38,9 +41,8 @@ jobs:
       - name: Build website
         run: npm run build
 
-        
       - name: Upload website
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./docs
 
