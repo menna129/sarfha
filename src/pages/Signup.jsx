@@ -1,34 +1,8 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 import "./Signup.css";
-
-async function hashPassword(password, salt) {
-  const encoder = new TextEncoder();
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"]
-  );
-
-  const hash = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt,
-      iterations: 150000,
-      hash: "SHA-256",
-    },
-    key,
-    256
-  );
-
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 function Signup({ isAr = true }) {
   const navigate = useNavigate();
@@ -40,10 +14,13 @@ function Signup({ isAr = true }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("customer");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (password !== confirmPassword) {
       setError(
@@ -54,49 +31,56 @@ function Signup({ isAr = true }) {
       return;
     }
 
-    try {
-      const users = JSON.parse(
-        localStorage.getItem("sarfhaUsers") || "[]"
-      );
-
-      const normalizedEmail = email.trim().toLowerCase();
-
-      if (users.some((user) => user.email === normalizedEmail)) {
-        setError(
-          isAr
-            ? "هذا البريد الإلكتروني مسجل بالفعل"
-            : "This email is already registered"
-        );
-        return;
-      }
-
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      const passwordHash = await hashPassword(password, salt);
-const newUser = {
-  id: Date.now(),
-  name: name.trim(),
-  email: normalizedEmail,
-  role: role,
-  salt: Array.from(salt),
-  passwordHash,
-};
-      users.push(newUser);
-
-      localStorage.setItem("sarfhaUsers", JSON.stringify(users));
-
-      alert(
-        isAr
-          ? "تم إنشاء حسابك بنجاح!"
-          : "Account created successfully!"
-      );
-
-      navigate("/login");
-    } catch (err) {
+    if (password.length < 8) {
       setError(
         isAr
-          ? "حدث خطأ أثناء إنشاء الحساب"
-          : "Something went wrong"
+          ? "كلمة المرور يجب أن تكون 8 أحرف على الأقل"
+          : "Password must be at least 8 characters"
       );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            name: name.trim(),
+            role: role,
+          },
+emailRedirectTo: "http://localhost:5175/sarfha/login",
+
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        alert(
+          isAr
+            ? "تم إنشاء الحساب بنجاح!"
+            : "Account created successfully!"
+        );
+        navigate("/login");
+      } else {
+        setSuccess(
+          isAr
+            ? "تم إنشاء الحساب! برجاء فتح رسالة التأكيد التي أرسلناها إلى بريدك الإلكتروني."
+            : "Account created! Please check your email to confirm your account."
+        );
+      }
+    } catch (err) {
+      setError(
+        err.message ||
+          (isAr
+            ? "حدث خطأ أثناء إنشاء الحساب"
+            : "Something went wrong")
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,29 +109,30 @@ const newUser = {
         <form onSubmit={handleSignup}>
           <label>{isAr ? "نوع الحساب" : "Account Type"}</label>
 
-<div className="account-type-options">
-  <label>
-    <input
-      type="radio"
-      name="role"
-      value="customer"
-      checked={role === "customer"}
-      onChange={(e) => setRole(e.target.value)}
-    />
-    {isAr ? "عميل" : "Customer"}
-  </label>
+          <div className="account-type-options">
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="customer"
+                checked={role === "customer"}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              {isAr ? "عميل" : "Customer"}
+            </label>
 
-  <label>
-    <input
-      type="radio"
-      name="role"
-      value="supplier"
-      checked={role === "supplier"}
-      onChange={(e) => setRole(e.target.value)}
-    />
-    {isAr ? "مورد" : "Supplier"}
-  </label>
-</div>
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="supplier"
+                checked={role === "supplier"}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              {isAr ? "مورد" : "Supplier"}
+            </label>
+          </div>
+
           <label>{isAr ? "الاسم الكامل" : "Full Name"}</label>
           <input
             type="text"
@@ -202,8 +187,20 @@ const newUser = {
             </p>
           )}
 
-          <button type="submit" className="signup-submit">
-            {isAr ? "إنشاء حساب" : "Create Account"}
+          {success && (
+            <p style={{ color: "#218838", marginTop: "12px" }}>
+              {success}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="signup-submit"
+            disabled={loading}
+          >
+            {loading
+              ? (isAr ? "جاري إنشاء الحساب..." : "Creating account...")
+              : (isAr ? "إنشاء حساب" : "Create Account")}
           </button>
         </form>
 

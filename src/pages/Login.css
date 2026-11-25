@@ -166,22 +166,38 @@
   margin-top: 15px;
   font-size: 14px;
 }
-
+/* Forgot Password Button */
 .forgot-password {
   margin-top: 10px;
   text-align: start;
-  font-size: 13px;
 }
 
-.forgot-password a {
+.forgot-password button {
+  padding: 0;
+  border: none;
+  background: transparent;
   color: #36734c;
-  text-decoration: none;
-  font-weight: 600;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.forgot-password a:hover {
+.forgot-password button:hover {
   color: #91d65a;
   text-decoration: underline;
+}
+
+.forgot-password button:focus-visible {
+  outline: 2px solid #91d65a;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.forgot-password button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .english {

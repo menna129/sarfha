@@ -50,7 +50,9 @@
   padding: 30px;
   border-radius: 16px;
   margin-top: 30px;
-  max-width: 600px;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
   box-shadow: 0 5px 20px rgba(0,0,0,0.06);
 }
 
@@ -283,4 +285,225 @@
 
 .supplier-home-btn:hover {
   background: #7fc348;
+}
+/* Fixed Supplier Dashboard Layout */
+
+.supplier-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  grid-template-rows: auto 1fr;
+  direction: ltr;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.supplier-header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.supplier-sidebar {
+  grid-column: 2;
+  grid-row: 2;
+  width: 250px;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+}
+
+.supplier-content {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.supplier-dashboard[dir="rtl"] .supplier-sidebar,
+.supplier-dashboard[dir="rtl"] .supplier-content {
+  direction: rtl;
+}
+
+.supplier-dashboard[dir="ltr"] .supplier-sidebar,
+.supplier-dashboard[dir="ltr"] .supplier-content {
+  direction: ltr;
+}
+
+@media (max-width: 768px) {
+  .supplier-dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .supplier-sidebar {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .supplier-sidebar h3 {
+    grid-column: 1 / -1;
+  }
+
+  .supplier-content {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+/* Restore Supplier Sidebar Design */
+
+.supplier-dashboard {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.supplier-sidebar {
+  background: #103c2d !important;
+  color: white;
+  padding: 30px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+}
+
+.supplier-sidebar h3 {
+  color: #91d65a !important;
+  margin: 0 10px 18px;
+  font-size: 15px;
+}
+
+.supplier-sidebar button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 14px 16px;
+  border-radius: 10px;
+  text-align: start;
+  font-family: "Cairo", sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.supplier-sidebar button:hover,
+.supplier-sidebar button.active {
+  background: #245b43;
+  color: #91d65a;
+}
+
+.supplier-content {
+  width: 100%;
+  max-width: none;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* Supplier Dashboard - Sidebar on the Right */
+@media (min-width: 769px) {
+  .supplier-dashboard {
+    grid-template-columns: minmax(0, 1fr) 190px;
+  }
+
+  .supplier-sidebar {
+    grid-column: 2;
+    width: 190px;
+    padding: 26px 12px;
+    gap: 10px;
+  }
+
+  .supplier-sidebar h3 {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+
+  .supplier-sidebar button {
+    padding: 13px 10px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .supplier-content {
+    grid-column: 1;
+    padding: 35px 4%;
+    min-width: 0;
+  }
+}
+
+/* Compact Supplier Header */
+.supplier-header {
+  min-height: 65px;
+  padding: 10px 25px;
+  box-sizing: border-box;
+}
+
+/* Sidebar Bottom Actions */
+.sidebar-bottom-actions {
+  margin-top: auto;
+  padding-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-bottom-actions button {
+  width: 100%;
+  padding: 12px 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 9px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.sidebar-bottom-actions button:hover {
+  background: #91d65a;
+  color: #103c2d;
+}
+
+/* Supplier Brand */
+.supplier-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+}
+
+.supplier-brand-icon {
+  font-size: 34px;
+  color: #91d65a;
+  line-height: 1;
+}
+
+.supplier-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.supplier-brand-text strong {
+  font-family: "Cairo", sans-serif;
+  font-size: 23px;
+  font-weight: 800;
+  color: white;
+}
+
+.supplier-brand-text small {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #c5d8cb;
 }

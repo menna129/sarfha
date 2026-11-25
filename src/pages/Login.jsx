@@ -3,32 +3,8 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 import "./Login.css";
-
-async function hashPassword(password, salt) {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"]
-  );
-
-  const hash = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: new Uint8Array(salt),
-      iterations: 150000,
-      hash: "SHA-256",
-    },
-    key,
-    256
-  );
-
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 function Login({ isAr = true, onLogin }) {
   const navigate = useNavigate();
@@ -37,47 +13,38 @@ function Login({ isAr = true, onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const users = JSON.parse(
-        localStorage.getItem("sarfhaUsers") || "[]"
-      );
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
-      const normalizedEmail = email.trim().toLowerCase();
+      if (error) {
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          throw new Error(
+            isAr
+              ? "يجب تأكيد البريد الإلكتروني أولاً"
+              : "Please confirm your email first"
+          );
+        }
 
-      const user = users.find(
-        (item) => item.email === normalizedEmail
-      );
-
-      if (!user) {
-        setError(
-          isAr
-            ? "البريد الإلكتروني غير مسجل"
-            : "Email is not registered"
-        );
-        return;
+        throw error;
       }
 
-      const enteredHash = await hashPassword(password, user.salt);
-
-      if (enteredHash !== user.passwordHash) {
-        setError(
-          isAr
-            ? "كلمة المرور غير صحيحة"
-            : "Incorrect password"
-        );
-        return;
-      }
+      const user = data.user;
 
       const loggedInUser = {
         id: user.id,
-        name: user.name,
+        name: user.user_metadata?.name || user.email,
         email: user.email,
-        role: user.role || "customer",
+        role: user.user_metadata?.role || "customer",
       };
 
       localStorage.setItem(
@@ -98,14 +65,55 @@ function Login({ isAr = true, onLogin }) {
       } else {
         navigate("/customer-dashboard");
       }
+
     } catch (err) {
       setError(
-        isAr
-          ? "حدث خطأ أثناء تسجيل الدخول"
-          : "Login error occurred"
+        err.message ||
+          (isAr
+            ? "حدث خطأ أثناء تسجيل الدخول"
+            : "Login error occurred")
       );
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleForgotPassword = async () => {
+  const cleanEmail = email.trim().toLowerCase();
+
+  if (!cleanEmail) {
+    setError(
+      isAr
+        ? "اكتبي البريد الإلكتروني الأول"
+        : "Please enter your email first"
+    );
+    return;
+  }
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      cleanEmail,
+      {
+      redirectTo: `${window.location.origin}/sarfha/reset-password`,
+      }
+    );
+
+    if (error) throw error;
+
+    alert(
+      isAr
+        ? "تم إرسال رابط تغيير كلمة المرور إلى بريدك الإلكتروني"
+        : "Password reset link sent to your email"
+    );
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div
@@ -172,15 +180,24 @@ function Login({ isAr = true, onLogin }) {
               {error}
             </p>
           )}
+<div className="forgot-password">
+  <button
+    type="button"
+    onClick={handleForgotPassword}
+    disabled={loading}
+  >
+    {isAr ? "نسيت كلمة المرور؟" : "Forgot Password?"}
+  </button>
+</div>
 
-          <div className="forgot-password">
-            <a href="#forgot-password">
-              {isAr ? "نسيت كلمة المرور؟" : "Forgot Password?"}
-            </a>
-          </div>
-
-          <button type="submit" className="login-submit">
-            {isAr ? "تسجيل الدخول" : "Login"}
+          <button
+            type="submit"
+            className="login-submit"
+            disabled={loading}
+          >
+            {loading
+              ? (isAr ? "جاري تسجيل الدخول..." : "Signing in...")
+              : (isAr ? "تسجيل الدخول" : "Login")}
           </button>
         </form>
 

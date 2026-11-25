@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
+import { supabase } from "../supabase";
 
 function Checkout({ cart, setCart }) {
   const navigate = useNavigate();
@@ -23,11 +24,11 @@ function Checkout({ cart, setCart }) {
   const [cvv, setCvv] = useState("");
 
   const total = cart.reduce(
-    (sum, item) => sum + item.price * (item.quantity || 1),
+    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
     0
   );
 
-  const handleConfirmOrder = (e) => {
+  const handleConfirmOrder = async (e) => {
     e.preventDefault();
 
     if (!currentUser || currentUser.role !== "customer") {
@@ -49,39 +50,60 @@ function Checkout({ cart, setCart }) {
       }
     }
 
-    const newOrder = {
-      id: Date.now(),
-      userId: currentUser.id,
-      customerName: name,
-      email: currentUser.email,
-      phone,
-      address,
-      items: cart,
-      total,
-      paymentMethod,
-      status: "Pending",
-      date: new Date().toLocaleDateString("en-GB"),
-    };
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-    const existingOrders = JSON.parse(
-      localStorage.getItem("sarrafha_orders") || "[]"
-    );
+      if (userError) throw userError;
 
-    localStorage.setItem(
-      "sarrafha_orders",
-      JSON.stringify([...existingOrders, newOrder])
-    );
+      if (!user) {
+        alert("انتهت جلسة تسجيل الدخول، سجلي الدخول مرة أخرى");
+        navigate("/login");
+        return;
+      }
 
-    setCart([]);
-    alert("تم تأكيد طلبك بنجاح!");
-    navigate("/my-orders");
+      const orderItems = cart.map((item) => ({
+        id: item.id,
+        name: item.name,
+        name_ar: item.name_ar || item.ar || "",
+        price: Number(item.price),
+        quantity: Number(item.quantity || 1),
+      }));
+
+      const { error } = await supabase.from("orders").insert([
+        {
+          customer_id: user.id,
+          customer_name: name,
+          email: user.email,
+          phone,
+          address,
+          items: orderItems,
+          total,
+          payment_method: paymentMethod,
+          status: "Pending",
+        },
+      ]);
+
+      if (error) throw error;
+
+      setCart([]);
+      alert("تم تأكيد طلبك بنجاح!");
+      navigate("/my-orders");
+    } catch (error) {
+      console.error("Order error:", error);
+      alert("حدث خطأ أثناء حفظ الطلب. حاولي مرة أخرى.");
+    }
   };
 
   if (!currentUser || currentUser.role !== "customer") {
     return (
       <div className="checkout-page">
         <h2>يجب تسجيل الدخول كعميل لإتمام الطلب</h2>
-        <button onClick={() => navigate("/login")}>تسجيل الدخول</button>
+        <button onClick={() => navigate("/login")}>
+          تسجيل الدخول
+        </button>
       </div>
     );
   }
@@ -160,7 +182,9 @@ function Checkout({ cart, setCart }) {
                 placeholder="123"
               />
 
-          <small>لا تستخدم بيانات بطاقة حقيقية. عملية الدفع هنا تجريبية فقط.</small>
+              <small>
+                لا تستخدم بيانات بطاقة حقيقية. عملية الدفع هنا تجريبية فقط.
+              </small>
             </div>
           )}
 

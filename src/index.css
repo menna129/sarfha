@@ -1,3 +1,5 @@
+
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -53,19 +55,17 @@
 body {
   margin: 0;
 }
-
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  text-align: initial;
+  border: none;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
-
 h1,
 h2 {
   font-family: var(--heading);
@@ -108,4 +108,217 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+
+/* ===== Fix Product Cards Layout ===== */
+
+.hero-visual {
+  min-height: 480px;
+  padding: 26px;
+}
+
+.hero-product-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  height: auto;
+  margin: 28px auto 0;
+}
+
+.hero-product-card {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: 88px;
+  transform: none;
+  padding: 10px 14px;
+  border: 1px solid rgba(16, 60, 45, 0.07);
+}
+
+.hero-product-card:hover {
+  transform: translateY(-3px);
+}
+
+.hero-product-image {
+  width: 68px;
+  height: 68px;
+}
+
+.hero-visual .visual-caption {
+  display: none;
+}
+
+.hero-visual .floating-card {
+  position: relative;
+  inset: auto;
+  margin-top: 18px;
+  max-width: 100%;
+}
+
+.english .hero-visual .floating-card {
+  position: relative;
+  inset: auto;
+}
+
+@media (max-width: 520px) {
+  .hero-visual {
+    min-height: auto;
+    padding: 20px 14px;
+  }
+
+  .hero-product-stack {
+    height: auto;
+    margin-top: 25px;
+  }
+
+  .hero-product-card {
+    width: 100%;
+    min-height: 82px;
+  }
+}
+
+/* ===== Sarrafha Premium Hero Showcase ===== */
+
+.hero-visual {
+  position: relative;
+  min-height: 510px;
+  padding: 32px;
+  border-radius: 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(145, 214, 90, 0.22), transparent 38%),
+    linear-gradient(145deg, #174d3b, #092d24);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+}
+
+.hero-showcase-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #d9efc9;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hero-showcase-top span:last-child {
+  color: #a5e66b;
+  font-size: 24px;
+}
+
+.hero-product-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 35px auto 0;
+  max-width: 390px;
+}
+
+.hero-product-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 100px;
+  padding: 13px 16px;
+  border-radius: 20px;
+  background: #fffdf4;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.13);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 17px 35px rgba(0, 0, 0, 0.2);
+}
+
+.hero-product-image {
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #f0f1e8;
+}
+
+.hero-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-product-details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hero-product-details strong {
+  color: #173d30;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hero-product-details span {
+  color: #57934a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hero-visual .floating-card {
+  position: relative;
+  inset: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 25px auto 0;
+  padding: 15px 20px;
+  border-radius: 17px;
+  background: #f8f6e9;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.hero-visual .floating-card strong {
+  color: #173d30;
+}
+
+.hero-visual .floating-card small {
+  color: #779078;
+}
+
+.hero-visual .visual-caption {
+  display: none;
+}
+
+.english .hero-visual .floating-card {
+  position: relative;
+  inset: auto;
+}
+
+@media (max-width: 768px) {
+  .hero-visual {
+    min-height: auto;
+    padding: 24px 16px;
+  }
+
+  .hero-product-stack {
+    margin-top: 25px;
+  }
+
+  .hero-product-card {
+    min-height: 88px;
+    padding: 10px;
+  }
+
+  .hero-product-image {
+    flex-basis: 65px;
+    width: 65px;
+    height: 65px;
+  }
 }

@@ -1,14 +1,22 @@
 
+
+
+
 import Signup from "./pages/Signup";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import SupplierDashboard from "./pages/SupplierDashboard";
 import AddProduct from "./pages/AddProduct";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
+import SupplierLayout from "./SupplierLayout";
+import { supabase, testSupabaseConnection } from "./supabase";
+
+
 const products = [
   {
     id: 1,
@@ -180,10 +188,25 @@ const products = [
     image: "Mini-Fridge.png",
   },
   ];
+function getProductImageSrc(image) {
+  if (!image) return "";
+
+  if (
+    image.startsWith("data:") ||
+    image.startsWith("http://") ||
+    image.startsWith("https://")
+  ) {
+    return image;
+  }
+
+return `${import.meta.env.BASE_URL}${image}`;
+}
 
 function HomePage({ cart, setCart, currentUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [supplierProducts] = useState(() => {
+  
+
+const [supplierProducts] = useState(() => {
   try {
     return JSON.parse(
       localStorage.getItem("sarfha_supplier_products") || "[]"
@@ -193,7 +216,54 @@ function HomePage({ cart, setCart, currentUser }) {
   }
 });
 
-const allProducts = [...products, ...supplierProducts];
+const [dbProducts, setDbProducts] = useState([]);
+
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadProducts() {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error loading products:", error.message);
+      return;
+    }
+
+    if (isMounted) {
+      const formattedProducts = (data || [])
+        .filter((p) => p.supplier_id)
+        .map((p) => ({
+          ...p,
+          ar: p.name_ar || p.name,
+          oldPrice: Number(p.old_price || p.price),
+          price: Number(p.price),
+          categoryAr:
+            p.category === "Food"
+              ? "منتجات غذائية"
+              : "أجهزة كهربائية",
+          icon: p.category === "Food" ? "🥐" : "🔌",
+          image: p.image || "",
+        }));
+
+      setDbProducts(formattedProducts);
+    }
+  }
+
+  loadProducts();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
+const allProducts =
+  dbProducts.length > 0 || supplierProducts.length > 0
+    ? [...dbProducts, ...supplierProducts]
+    : products;
+
   const [lang, setLang] = useState("ar");
   const [category, setCategory] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -396,25 +466,28 @@ const filteredProducts =
             </div>
           </div>
 
-          <div className="hero-visual">
-            <div className="visual-circle">
-              <span>♻</span>
-            </div>
-            <div className="floating-card">
-              <span>🌿</span>
-              <div>
-                <strong>{isAr ? "أنقذ منتجاً اليوم" : "Save a product today"}</strong>
-                <small>{isAr ? "اشتري بذكاء ووفّر" : "Shop smart and save"}</small>
-              </div>
-            </div>
-            <div className="visual-caption">
-              {isAr ? "كل منتج يستحق فرصة تانية" : "Every product deserves another chance"}
-            </div>
-          </div>
+        <div className="hero-visual">
+  <img
+    className="hero-showcase-image"
+    src={`${import.meta.env.BASE_URL}hero-showcase.png`}
+    alt={isAr ? "منتجات صرفها" : "Sarrafha products"}
+  />
+
+  <div className="floating-card">
+    <span>🌿</span>
+    <div>
+      <strong>{isAr ? "أنقذ منتجاً اليوم" : "Save a product today"}</strong>
+      <small>{isAr ? "اشتري بذكاء ووفّر" : "Shop smart and save"}</small>
+    </div>
+  </div>
+</div>
+
+
         </section>
 
         <section className="features">
           <div>
+            
             <span>♻</span>
             <strong>{isAr ? "تقليل الهدر" : "Less Waste"}</strong>
           </div>
@@ -459,36 +532,54 @@ const filteredProducts =
 
 
               <article className="product-card" key={product.id}>
+
                 <div className="product-image">
-                 
+              
           <img
   className="product-photo"
-src={
-  product.image.startsWith("data:")
-    ? product.image
-    : `${import.meta.env.BASE_URL}${product.image}`
-}
+  
+  
+  src={getProductImageSrc(product.image)}
+
   alt={isAr ? product.ar : product.name}
 />
+
+{product.discount && (
+  <span className="product-discount">
+    {isAr ? `خصم ${product.discount}` : `${product.discount} OFF`}
+  </span>
+)}
                 </div>
-                <div className="product-info">
-                  <small>{isAr ? product.categoryAr : product.category}</small>
-                  <h3>{isAr ? product.ar : product.name}</h3>
-                  <div className="price-row">
-                    <strong>{product.price} {isAr ? "ج.م" : "EGP"}</strong>
-                    <del>{product.oldPrice} {isAr ? "ج.م" : "EGP"}</del>
-                  </div>
-                  <p className="expiry">
-                    ⏳ {isAr ? "الصلاحية / الحالة:" : "Expiry / Condition:"} {product.expiry}
-                  </p>
-<button
-  className="buy-btn"
-  onClick={() => setSelectedProduct(product)}
->
-  {isAr ? "عرض التفاصيل" : "View Details"}
-</button>
-              
-                </div>
+
+
+<div className="product-info">
+  <small>{isAr ? product.categoryAr : product.category}</small>
+
+  <h3>{isAr ? product.ar : product.name}</h3>
+
+  <div className="price-row">
+    <strong>
+      {product.price} {isAr ? "ج.م" : "EGP"}
+    </strong>
+
+    {Number(product.oldPrice) > Number(product.price) && (
+      <del>
+        {product.oldPrice} {isAr ? "ج.م" : "EGP"}
+      </del>
+    )}
+  </div>
+
+  <p className="expiry">
+    ⏳ {isAr ? "الصلاحية / الحالة:" : "Expiry / Condition:"} {product.expiry}
+  </p>
+
+  <button
+    className="buy-btn"
+    onClick={() => setSelectedProduct(product)}
+  >
+    {isAr ? "عرض التفاصيل" : "View Details"}
+  </button>
+</div>
               </article>
             ))}
           </div>
@@ -508,9 +599,9 @@ src={
 <div className="modal-image">
   <img
    src={
-  selectedProduct.image.startsWith("data:")
-    ? selectedProduct.image
-    : `${import.meta.env.BASE_URL}${selectedProduct.image}`
+
+getProductImageSrc(selectedProduct.image)
+
 }
     alt={selectedProduct.name}
     onError={(e) => {
@@ -604,6 +695,39 @@ src={
               : "Sarrafha connects suppliers with customers, turning surplus products into valuable opportunities for everyone."}
           </p>
         </section>
+        <div className="about-features">
+
+  <div className="about-feature-card">
+    <span className="about-feature-icon">♻️</span>
+    <h3>{isAr ? "تقليل الهدر" : "Reduce Waste"}</h3>
+    <p>
+      {isAr
+        ? "نساعد في تقليل المنتجات المهدرة والاستفادة منها."
+        : "We help reduce wasted products and make better use of them."}
+    </p>
+  </div>
+
+  <div className="about-feature-card">
+    <span className="about-feature-icon">💰</span>
+    <h3>{isAr ? "توفير المال" : "Save Money"}</h3>
+    <p>
+      {isAr
+        ? "نوفر منتجات بأسعار أقل تناسب احتياجات العملاء."
+        : "We offer products at lower prices for customers."}
+    </p>
+  </div>
+
+  <div className="about-feature-card">
+    <span className="about-feature-icon">🤝</span>
+    <h3>{isAr ? "دعم الموردين" : "Support Suppliers"}</h3>
+    <p>
+      {isAr
+        ? "نساعد الموردين على بيع منتجاتهم وتقليل خسائرهم."
+        : "We help suppliers sell their products and reduce losses."}
+    </p>
+  </div>
+
+</div>
       </main>
 
       <footer>
@@ -619,6 +743,9 @@ src={
 
 
 function App() {
+  useEffect(() => {
+  testSupabaseConnection();
+}, []);
   const [currentUser, setCurrentUser] = useState(() => {
   try {
     return JSON.parse(localStorage.getItem("sarfhaCurrentUser")) || null;
@@ -640,6 +767,8 @@ function App() {
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+
+
       <Routes>
         
         <Route
@@ -656,20 +785,22 @@ function App() {
   path="/login"
   element={<Login onLogin={setCurrentUser} />}
 />
-        <Route path="/signup" element={<Signup />} />
-        
-        <Route
-  path="/supplier-dashboard"
-  element={
-    <SupplierDashboard
-      onLogout={() => setCurrentUser(null)}
-    />
-  }
-/>
+
 <Route
-  path="/add-product"
-  element={<AddProduct />}
+  path="/reset-password"
+  element={<ResetPassword />}
 />
+        <Route path="/signup" element={<Signup />} />
+        <Route element={<SupplierLayout onLogout={() => setCurrentUser(null)} />}>
+  <Route
+    path="/supplier-dashboard"
+    element={<SupplierDashboard />}
+  />
+  <Route
+    path="/add-product"
+    element={<AddProduct />}
+  />
+</Route>
 <Route
   path="/customer-dashboard"
   element={<CustomerDashboard />}
@@ -689,3 +820,5 @@ function App() {
 }
 
 export default App;
+
+
