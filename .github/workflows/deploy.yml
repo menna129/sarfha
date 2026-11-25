@@ -37,10 +37,11 @@ jobs:
 
       - name: Install packages
         run: npm ci
-
       - name: Build website
         run: npm run build
-
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - name: Upload website
         uses: actions/upload-pages-artifact@v4
         with:
