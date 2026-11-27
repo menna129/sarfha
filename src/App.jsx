@@ -188,6 +188,7 @@ const products = [
     image: "Mini-Fridge.png",
   },
   ];
+  
 function getProductImageSrc(image) {
   if (!image) return "";
 
@@ -746,13 +747,73 @@ function App() {
   useEffect(() => {
   testSupabaseConnection();
 }, []);
-  const [currentUser, setCurrentUser] = useState(() => {
-  try {
-    return JSON.parse(localStorage.getItem("sarfhaCurrentUser")) || null;
-  } catch {
-    return null;
-  }
-});
+const [authLoading, setAuthLoading] = useState(true);
+
+const [currentUser, setCurrentUser] = useState(null);
+useEffect(() => {
+  let isMounted = true;
+
+  const loadUser = async (user) => {
+    if (!user) {
+      if (isMounted) {
+        setCurrentUser(null);
+        setAuthLoading(false);
+      }
+
+      localStorage.removeItem("sarfhaCurrentUser");
+      return;
+    }
+
+    const { data: roleData, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!isMounted) return;
+
+    if (
+      error ||
+      !roleData ||
+      !["customer", "supplier"].includes(roleData.role)
+    ) {
+      setCurrentUser(null);
+      localStorage.removeItem("sarfhaCurrentUser");
+      setAuthLoading(false);
+      return;
+    }
+
+    const loggedInUser = {
+      id: user.id,
+      name: user.user_metadata?.name || user.email,
+      email: user.email,
+      role: roleData.role,
+    };
+
+    setCurrentUser(loggedInUser);
+
+    localStorage.setItem(
+      "sarfhaCurrentUser",
+      JSON.stringify(loggedInUser)
+    );
+
+    setAuthLoading(false);
+  };
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    setTimeout(() => {
+      loadUser(session?.user || null);
+    }, 0);
+  });
+
+  return () => {
+    isMounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
+
   const [cart, setCart] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("sarrafha_cart")) || [];
@@ -765,33 +826,33 @@ function App() {
     localStorage.setItem("sarrafha_cart", JSON.stringify(cart));
   }, [cart]);
 
+ 
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+
+<BrowserRouter
+  basename={import.meta.env.DEV ? "/" : "/sarfha"}
+>    {authLoading ? (
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        جاري التحقق من تسجيل الدخول...
+      </div>
+    ) : (
 
 
       <Routes>
-        
-        <Route
-  path="/"
+
+<Route path="/" element={<HomePage cart={cart} setCart={setCart} currentUser={currentUser} />} />
+<Route path="/login" element={<Login onLogin={setCurrentUser} />} />
+<Route path="/reset-password" element={<ResetPassword />} />
+<Route path="/signup" element={<Signup />} />
+
+  <Route
   element={
-    <HomePage
-      cart={cart}
-      setCart={setCart}
+    <SupplierLayout
       currentUser={currentUser}
+      onLogout={() => setCurrentUser(null)}
     />
   }
-/>
-<Route
-  path="/login"
-  element={<Login onLogin={setCurrentUser} />}
-/>
-
-<Route
-  path="/reset-password"
-  element={<ResetPassword />}
-/>
-        <Route path="/signup" element={<Signup />} />
-        <Route element={<SupplierLayout onLogout={() => setCurrentUser(null)} />}>
+>
   <Route
     path="/supplier-dashboard"
     element={<SupplierDashboard />}
@@ -801,21 +862,24 @@ function App() {
     element={<AddProduct />}
   />
 </Route>
-<Route
+        <Route
   path="/customer-dashboard"
-  element={<CustomerDashboard />}
+  element={<CustomerDashboard currentUser={currentUser} />}
 />
 
 <Route
   path="/checkout"
   element={<Checkout cart={cart} setCart={setCart} />}
 />
+
 <Route
   path="/my-orders"
-  element={<MyOrders />}
+  element={<MyOrders currentUser={currentUser} />}
 />
-      </Routes>
-    </BrowserRouter>
+
+           </Routes>
+    )}
+  </BrowserRouter>
   );
 }
 

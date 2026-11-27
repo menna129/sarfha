@@ -40,12 +40,32 @@ function Login({ isAr = true, onLogin }) {
 
       const user = data.user;
 
-      const loggedInUser = {
-        id: user.id,
-        name: user.user_metadata?.name || user.email,
-        email: user.email,
-        role: user.user_metadata?.role || "customer",
-      };
+      const { data: roleData, error: roleError } = await supabase
+  .from("user_roles")
+  .select("role")
+  .eq("user_id", user.id)
+  .single();
+
+  if (
+  roleError ||
+  !roleData ||
+  !["customer", "supplier"].includes(roleData.role)
+) {
+  await supabase.auth.signOut();
+
+  throw new Error(
+    isAr
+      ? "لم نتمكن من تحديد نوع الحساب. تواصلي مع الدعم."
+      : "Could not determine account type. Please contact support."
+  );
+}
+
+const loggedInUser = {
+  id: user.id,
+  name: user.user_metadata?.name || user.email,
+  email: user.email,
+  role: roleData.role,
+};
 
       localStorage.setItem(
         "sarfhaCurrentUser",

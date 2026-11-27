@@ -243,3 +243,112 @@
 .signup-card input {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+ 
+/* ==============================
+   Email Confirmation Screen
+============================== */
+
+.confirmation-card {
+  max-width: 480px;
+  animation: confirmationFadeIn 0.4s ease;
+}
+
+.confirmation-icon {
+  width: 82px;
+  height: 82px;
+  margin: 18px auto 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eaf4e7;
+  color: #36734c;
+  font-size: 42px;
+  box-shadow: 0 5px 18px rgba(54, 115, 76, 0.12);
+}
+
+.confirmation-card h1 {
+  font-size: 25px;
+  line-height: 1.6;
+}
+
+.confirmation-message {
+  margin-top: 24px;
+  padding: 20px 16px;
+  background: #f6f9f3;
+  border: 1px solid #e1eadc;
+  border-radius: 16px;
+  line-height: 1.9;
+}
+
+.confirmation-message p {
+  color: #66756a;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.confirmation-email {
+  display: block;
+  color: #103c2d;
+  font-size: 15px;
+  direction: ltr;
+  overflow-wrap: anywhere;
+  margin: 12px 0;
+}
+
+.confirmation-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  text-align: start;
+  margin-top: 18px;
+  padding: 12px;
+  background: #f1f5f8;
+  border-radius: 12px;
+  color: #526b78;
+}
+
+.confirmation-note span {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.confirmation-note p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.confirmation-card .signup-submit {
+  margin-top: 22px;
+}
+
+.confirmation-card .signup-submit:hover {
+  background: #245b40;
+}
+
+@keyframes confirmationFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .confirmation-card {
+    padding: 28px 22px;
+  }
+
+  .confirmation-card h1 {
+    font-size: 22px;
+  }
+
+  .confirmation-email {
+    font-size: 13px;
+  }
+}

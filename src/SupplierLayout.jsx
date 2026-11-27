@@ -1,19 +1,11 @@
 
 
-import { useState } from "react";
+
 import { Outlet, useNavigate, Link, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabase";
 import "./pages/SupplierDashboard.css";
-function SupplierLayout({ onLogout, isAr = true }) {
+function SupplierLayout({ currentUser, onLogout, isAr = true }) {
   const navigate = useNavigate();
-
-  const [currentUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("sarfhaCurrentUser"));
-    } catch {
-      return null;
-    }
-  });
 
 const location = useLocation();
 

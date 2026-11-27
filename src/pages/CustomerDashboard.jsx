@@ -1,60 +1,78 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 import "./CustomerDashboard.css";
 
-function CustomerDashboard() {
+function CustomerDashboard({ currentUser }) {
   const navigate = useNavigate();
-
-  const [currentUser] = useState(() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("sarfhaCurrentUser")
-      );
-    } catch {
-      return null;
-    }
-  });
 
   const [lang, setLang] = useState("ar");
   const isAr = lang === "ar";
 
-const ordersCount = (() => {
-  try {
-    const allOrders = JSON.parse(
-      localStorage.getItem("sarrafha_orders") || "[]"
-    );
+const [ordersCount, setOrdersCount] = useState(0);
+const [lastOrder, setLastOrder] = useState(null);
 
-    return allOrders.filter(
-      (order) => order.userId === currentUser?.id
-    ).length;
-  } catch {
-    return 0;
-  }
-})();
+useEffect(() => {
+  const fetchDashboardOrders = async () => {
+    try {
+      if (!currentUser || currentUser.role !== "customer") return;
 
-const lastOrder = (() => {
-  try {
-    const allOrders = JSON.parse(
-      localStorage.getItem("sarrafha_orders") || "[]"
-    );
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-    const userOrders = allOrders.filter(
-      (order) => order.userId === currentUser?.id
-    );
+      if (userError) throw userError;
 
-    return userOrders.length > 0
-      ? userOrders[userOrders.length - 1]
-      : null;
-  } catch {
-    return null;
-  }
-})();
+      if (!user || user.id !== currentUser.id) {
+        throw new Error("جلسة تسجيل الدخول غير متطابقة");
+      }
 
-  const handleLogout = () => {
-    localStorage.removeItem("sarfhaCurrentUser");
-    navigate("/login");
+      const [countResult, latestResult] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("id", { count: "exact", head: true })
+          .eq("customer_id", user.id),
+
+        supabase
+          .from("orders")
+          .select("id, created_at, status, total")
+          .eq("customer_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      if (countResult.error) throw countResult.error;
+      if (latestResult.error) throw latestResult.error;
+
+      setOrdersCount(countResult.count || 0);
+      setLastOrder(latestResult.data);
+    } catch (err) {
+      console.error("Dashboard orders error:", err);
+    }
   };
+
+  fetchDashboardOrders();
+}, [currentUser]);
+
+const handleLogout = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    alert(
+      isAr
+        ? "حدث خطأ أثناء تسجيل الخروج"
+        : "Error while logging out"
+    );
+    return;
+  }
+
+  localStorage.removeItem("sarfhaCurrentUser");
+  navigate("/login", { replace: true });
+};
+
 
   if (!currentUser || currentUser.role !== "customer") {
     return (
@@ -121,7 +139,7 @@ const lastOrder = (() => {
     {lastOrder ? (
       <>
         <p>{isAr ? "رقم الطلب:" : "Order ID:"} {lastOrder.id}</p>
-        <p>{isAr ? "تاريخ الطلب:" : "Order Date:"} {lastOrder.date}</p>
+        <p>{isAr ? "تاريخ الطلب:" : "Order Date:"} {new Date(lastOrder.created_at).toLocaleDateString("ar-EG")}</p>
         <p>{isAr ? "حالة الطلب:" : "Order Status:"} {lastOrder.status}</p>
         <p>{isAr ? "الإجمالي:" : "Total:"} {lastOrder.total} EGP</p>
       </>

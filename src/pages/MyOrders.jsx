@@ -1,19 +1,13 @@
 
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
 import "./MyOrders.css";
 
-function MyOrders() {
+function MyOrders({ currentUser }) {
   const navigate = useNavigate();
 
-  const [currentUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("sarfhaCurrentUser"));
-    } catch {
-      return null;
-    }
-  });
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

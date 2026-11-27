@@ -1,4 +1,6 @@
 
+
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -14,13 +16,12 @@ function Signup({ isAr = true }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("customer");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (password !== confirmPassword) {
       setError(
@@ -51,26 +52,16 @@ function Signup({ isAr = true }) {
             name: name.trim(),
             role: role,
           },
-emailRedirectTo: "http://localhost:5175/sarfha/login",
-
+          emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}login`,
         },
       });
 
       if (error) throw error;
 
       if (data.session) {
-        alert(
-          isAr
-            ? "تم إنشاء الحساب بنجاح!"
-            : "Account created successfully!"
-        );
         navigate("/login");
       } else {
-        setSuccess(
-          isAr
-            ? "تم إنشاء الحساب! برجاء فتح رسالة التأكيد التي أرسلناها إلى بريدك الإلكتروني."
-            : "Account created! Please check your email to confirm your account."
-        );
+        setSuccess(true);
       }
     } catch (err) {
       setError(
@@ -84,12 +75,90 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
     }
   };
 
+  // Email confirmation screen
+  if (success) {
+    return (
+      <div
+        className={`signup-page ${isAr ? "arabic" : "english"}`}
+        dir={isAr ? "rtl" : "ltr"}
+      >
+        <div className="signup-card confirmation-card">
+
+          <Link to="/" className="login-brand">
+            <span className="brand-icon">♻</span>
+            <span>
+              <strong>صرفها</strong>
+              <small>Sarrafha</small>
+            </span>
+          </Link>
+
+          <div className="confirmation-icon">
+            <span>✉</span>
+          </div>
+
+          <h1>
+            {isAr
+              ? "تم إنشاء حسابك بنجاح!"
+              : "Account Created Successfully!"}
+          </h1>
+
+          <p className="signup-subtitle">
+            {isAr
+              ? "خطوة واحدة تفصلك عن الانضمام إلى صرفها"
+              : "One more step to join Sarrafha"}
+          </p>
+
+          <div className="confirmation-message">
+            <p>
+              {isAr
+                ? "أرسلنا رسالة تأكيد إلى بريدك الإلكتروني:"
+                : "We've sent a confirmation email to:"}
+            </p>
+
+            <strong className="confirmation-email">
+              {email.trim().toLowerCase()}
+            </strong>
+
+            <p>
+              {isAr
+                ? "افتح الرسالة واضغط على رابط التأكيد لتفعيل حسابك."
+                : "Open the email and click the confirmation link to activate your account."}
+            </p>
+          </div>
+
+          <div className="confirmation-note">
+            <span>ℹ</span>
+            <p>
+              {isAr
+                ? "إذا لم تجد الرسالة، تحقق من مجلد البريد غير الهام (Spam)."
+                : "If you can't find the email, check your Spam folder."}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="signup-submit"
+            onClick={() => navigate("/login")}
+          >
+            {isAr ? "العودة لتسجيل الدخول" : "Back to Login"}
+          </button>
+
+          <Link to="/" className="back-home">
+            {isAr ? "العودة للرئيسية" : "Back to Home"}
+          </Link>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`signup-page ${isAr ? "arabic" : "english"}`}
       dir={isAr ? "rtl" : "ltr"}
     >
       <div className="signup-card">
+
         <Link to="/" className="login-brand">
           <span className="brand-icon">♻</span>
           <span>
@@ -107,6 +176,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
         </p>
 
         <form onSubmit={handleSignup}>
+
           <label>{isAr ? "نوع الحساب" : "Account Type"}</label>
 
           <div className="account-type-options">
@@ -152,6 +222,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
           />
 
           <label>{isAr ? "كلمة المرور" : "Password"}</label>
+
           <div className="signup-password">
             <input
               type={showPassword ? "text" : "password"}
@@ -161,6 +232,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
               minLength={8}
               required
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -172,6 +244,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
           </div>
 
           <label>{isAr ? "تأكيد كلمة المرور" : "Confirm Password"}</label>
+
           <input
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
@@ -187,12 +260,6 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
             </p>
           )}
 
-          {success && (
-            <p style={{ color: "#218838", marginTop: "12px" }}>
-              {success}
-            </p>
-          )}
-
           <button
             type="submit"
             className="signup-submit"
@@ -202,6 +269,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
               ? (isAr ? "جاري إنشاء الحساب..." : "Creating account...")
               : (isAr ? "إنشاء حساب" : "Create Account")}
           </button>
+
         </form>
 
         <p className="signup-login">
@@ -214,6 +282,7 @@ emailRedirectTo: "http://localhost:5175/sarfha/login",
         <Link to="/" className="back-home">
           {isAr ? "العودة للرئيسية" : "Back to Home"}
         </Link>
+
       </div>
     </div>
   );

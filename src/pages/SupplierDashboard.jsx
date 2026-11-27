@@ -28,6 +28,7 @@ const [supplierOrders, setSupplierOrders] = useState([]);
 const [loadingOrders, setLoadingOrders] = useState(true);
 const [orderStatuses, setOrderStatuses] = useState({});
 const [updatingOrder, setUpdatingOrder] = useState(null);
+const [openStatusOrder, setOpenStatusOrder] = useState(null);
 
 useEffect(() => {
   const fetchSupplierProducts = async () => {
@@ -174,7 +175,8 @@ const handleLogout = async () => {
 
     localStorage.removeItem("sarfhaCurrentUser");
     onLogout?.();
-    navigate("/login");
+
+ navigate("/login", { replace: true });    
   } catch (error) {
     console.error("Logout error:", error);
     alert(isAr ? "حدث خطأ أثناء تسجيل الخروج" : "Logout failed");
@@ -392,6 +394,7 @@ return (
     <>
       <h1>
         {isAr
+
           ? `أهلاً ${currentUser.name}`
           : `Welcome ${currentUser.name}`}
       </h1>
@@ -541,15 +544,27 @@ return (
                   {order.address}
                 </p>
 
-                <p>
-                  {isAr ? "حالة الطلب: " : "Order Status: "}
-                  {currentStatus === "Pending"
-                    ? isAr ? "قيد الانتظار" : "Pending"
-                    : currentStatus === "Processing"
-                    ? isAr ? "جاري التجهيز" : "Processing"
-                    : isAr ? "تم التسليم" : "Delivered"}
-                </p>
+<div className="order-status-row">
+  <strong>
+    {isAr ? "حالة الطلب:" : "Order Status:"}
+  </strong>
 
+  <span
+    className={`order-status-badge ${
+      currentStatus === "Pending"
+        ? "status-pending"
+        : currentStatus === "Processing"
+        ? "status-processing"
+        : "status-delivered"
+    }`}
+  >
+    {currentStatus === "Pending"
+      ? isAr ? "قيد الانتظار" : "Pending"
+      : currentStatus === "Processing"
+      ? isAr ? "جاري التجهيز" : "Processing"
+      : isAr ? "تم التسليم" : "Delivered"}
+  </span>
+</div>
                 <h4>{isAr ? "المنتجات:" : "Products:"}</h4>
 
                 {order.items.map((item, index) => (
@@ -587,29 +602,64 @@ return (
                   <label>
                     {isAr ? "تغيير حالة الطلب: " : "Update Order Status: "}
                   </label>
+              <div className="custom-status-dropdown">
+  <button
+    type="button"
+    className={`custom-status-trigger ${
+      currentStatus.toLowerCase()
+    }`}
+    disabled={updatingOrder === order.order_id}
+    onClick={() =>
+      setOpenStatusOrder(
+        openStatusOrder === order.order_id
+          ? null
+          : order.order_id
+      )
+    }
+  >
+    <span>
+      {currentStatus === "Pending"
+        ? isAr ? "قيد الانتظار" : "Pending"
+        : currentStatus === "Processing"
+        ? isAr ? "جاري التجهيز" : "Processing"
+        : isAr ? "تم التسليم" : "Delivered"}
+    </span>
 
-                  <select
-                    value={currentStatus}
-                    disabled={updatingOrder === order.order_id}
-                    onChange={(e) =>
-                      handleUpdateOrderStatus(
-                        order.order_id,
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="Pending">
-                      {isAr ? "قيد الانتظار" : "Pending"}
-                    </option>
+    <span className="dropdown-arrow">⌄</span>
+  </button>
 
-                    <option value="Processing">
-                      {isAr ? "جاري التجهيز" : "Processing"}
-                    </option>
+  {openStatusOrder === order.order_id && (
+    <div className="custom-status-options">
+      {[
+        { value: "Pending", ar: "قيد الانتظار", en: "Pending" },
+        { value: "Processing", ar: "جاري التجهيز", en: "Processing" },
+        { value: "Delivered", ar: "تم التسليم", en: "Delivered" },
+      ].map((status) => (
+        <button
+          type="button"
+          key={status.value}
+          className={`custom-status-option ${
+            currentStatus === status.value ? "selected" : ""
+          }`}
+          disabled={updatingOrder === order.order_id}
+          onClick={() => {
+            setOpenStatusOrder(null);
+            handleUpdateOrderStatus(
+              order.order_id,
+              status.value
+            );
+          }}
+        >
+          <span>{isAr ? status.ar : status.en}</span>
 
-                    <option value="Delivered">
-                      {isAr ? "تم التسليم" : "Delivered"}
-                    </option>
-                  </select>
+          {currentStatus === status.value && (
+            <span>✓</span>
+          )}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
                   {updatingOrder === order.order_id && (
                     <p>

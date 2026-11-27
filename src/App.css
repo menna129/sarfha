@@ -204,11 +204,13 @@ a {
   font-size: 12px;
 }
 
+
+
 /* Features */
 
 .features {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   padding: 35px 9%;
   background: #fff;
@@ -216,13 +218,15 @@ a {
 
 .features > div {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 13px;
-  padding: 20px;
-background: #e8efe3;
+  padding: 20px 12px;
+  background: #e8efe3;
   border-radius: 15px;
   color: #174c35;
+  text-align: center;
 }
 
 .features span {
@@ -232,6 +236,31 @@ background: #e8efe3;
 .features strong {
   font-size: 15px;
 }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 25px 12px;
+  }
+
+  .features > div {
+    gap: 10px;
+    padding: 18px 5px;
+    border-radius: 14px;
+  }
+
+  .features span {
+    font-size: 23px;
+  }
+
+  .features strong {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
 
 /* Products */
 

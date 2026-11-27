@@ -119,6 +119,7 @@ function AddProduct({ isAr = true }) {
         ((Number(formData.oldPrice) - Number(formData.price)) /
           Number(formData.oldPrice)) * 100
       );
+
 const productData = {
   name: formData.name.trim(),
   name_ar: formData.ar.trim(),
@@ -139,10 +140,10 @@ if (!editingProduct?.id) {
 
       if (editingProduct?.id) {
         const result = await supabase
-          .from("products")
-          .update(productData)
-          .eq("id", editingProduct.id);
-
+  .from("products")
+  .update(productData)
+  .eq("id", editingProduct.id)
+  .eq("supplier_id", user.id);
         error = result.error;
       } else {
         const result = await supabase
