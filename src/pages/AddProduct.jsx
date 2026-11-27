@@ -19,6 +19,7 @@ function AddProduct({ isAr = true }) {
     name: editingProduct?.name || "",
     ar: editingProduct?.ar || editingProduct?.name_ar || "",
     category: editingProduct?.category || "Food",
+    subcategory: editingProduct?.subcategory || "",
     oldPrice: editingProduct?.oldPrice || editingProduct?.old_price || "",
     price: editingProduct?.price || "",
     quantity: editingProduct?.quantity || "",
@@ -59,6 +60,7 @@ function AddProduct({ isAr = true }) {
     if (Number(formData.price) >= Number(formData.oldPrice)) {
       alert(
         isAr
+
           ? "السعر بعد الخصم لازم يكون أقل من السعر القديم"
           : "Discounted price must be lower than original price"
       );
@@ -124,6 +126,7 @@ const productData = {
   name: formData.name.trim(),
   name_ar: formData.ar.trim(),
   category: formData.category,
+  subcategory: formData.subcategory,
   old_price: Number(formData.oldPrice),
   price: Number(formData.price),
   discount: `${discount}%`,
@@ -216,17 +219,59 @@ if (!editingProduct?.id) {
           />
 
           <label>{isAr ? "التصنيف" : "Category"}</label>
+          
           <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          >
-            <option value="Food">{isAr ? "أغذية" : "Food"}</option>
-            <option value="Electronics">
-              {isAr ? "أجهزة كهربائية" : "Electronics"}
-            </option>
-          </select>
+  name="category"
+  value={formData.category}
+  onChange={handleChange}
+>
+  <option value="Food">{isAr ? "أغذية" : "Food"}</option>
 
+  <option value="Electronics">
+    {isAr ? "أجهزة كهربائية" : "Electronics"}
+  </option>
+
+  <option value="Beauty">
+    {isAr ? "تجميل وعناية شخصية" : "Beauty & Personal Care"}
+  </option>
+</select>
+
+{formData.category === "Beauty" && (
+  <>
+    <label>{isAr ? "نوع المنتج" : "Product Type"}</label>
+
+    <select
+      name="subcategory"
+      value={formData.subcategory}
+      onChange={handleChange}
+      required
+    >
+      <option value="">
+        {isAr ? "اختاري نوع المنتج" : "Choose product type"}
+      </option>
+
+      <option value="Skincare">
+        {isAr ? "العناية بالبشرة" : "Skincare"}
+      </option>
+
+      <option value="Makeup">
+        {isAr ? "المكياج" : "Makeup"}
+      </option>
+
+      <option value="Haircare">
+        {isAr ? "العناية بالشعر" : "Haircare"}
+      </option>
+
+      <option value="Bodycare">
+        {isAr ? "العناية بالجسم" : "Body Care"}
+      </option>
+
+      <option value="Perfumes">
+        {isAr ? "العطور" : "Perfumes"}
+      </option>
+    </select>
+  </>
+)}
           <label>{isAr ? "السعر القديم" : "Original Price"}</label>
           <input
             type="number"

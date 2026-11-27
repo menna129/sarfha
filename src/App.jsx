@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login";
+import Beauty from "./pages/Beauty";
 import ResetPassword from "./pages/ResetPassword";
 import SupplierDashboard from "./pages/SupplierDashboard";
 import AddProduct from "./pages/AddProduct";
@@ -305,6 +306,7 @@ const filteredProducts =
     <a href="#products" onClick={() => setMenuOpen(false)}>
       {isAr ? "المنتجات" : "Products"}
     </a>
+    
     <a href="#about" onClick={() => setMenuOpen(false)}>
       {isAr ? "عن صرفها" : "About Us"}
     </a>
@@ -516,6 +518,7 @@ const filteredProducts =
               ["All", isAr ? "الكل" : "All"],
               ["Food", isAr ? "الأغذية" : "Food"],
               ["Electronics", isAr ? "الأجهزة الكهربائية" : "Electronics"],
+              ["Beauty", isAr ? "الجمال والعناية" : "Beauty & Care"],
             ].map(([value, label]) => (
               <button
                 key={value}
@@ -839,6 +842,11 @@ useEffect(() => {
 
 
       <Routes>
+
+        <Route
+  path="/beauty"
+  element={<Beauty cart={cart} setCart={setCart} />}
+/>
 
 <Route path="/" element={<HomePage cart={cart} setCart={setCart} currentUser={currentUser} />} />
 <Route path="/login" element={<Login onLogin={setCurrentUser} />} />

@@ -1,0 +1,133 @@
+
+.beauty-page {
+  min-height: 100vh;
+  padding: 45px 7%;
+  background: #f6f7f1;
+  color: #173d30;
+  direction: inherit;
+}
+
+.beauty-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.beauty-header h1 {
+  color: #174c35;
+  font-size: clamp(28px, 4vw, 42px);
+  margin-bottom: 12px;
+}
+
+.beauty-header p {
+  color: #718075;
+  line-height: 1.8;
+}
+
+.beauty-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 30px 0;
+}
+
+.beauty-filters button {
+  border: 1px solid #e1e9dc;
+  background: white;
+  color: #345c46;
+  padding: 11px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.beauty-filters button:hover,
+.beauty-filters button.active {
+  background: #174c35;
+  color: white;
+  border-color: #174c35;
+}
+
+.beauty-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.beauty-card {
+  background: white;
+  border: 1px solid #e1e9dc;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+
+.beauty-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px #163d2d12;
+}
+
+.beauty-card img {
+  width: 100%;
+  height: 190px;
+  object-fit: contain;
+  padding: 12px;
+  background: linear-gradient(135deg, #e4eddd, #f5f1df);
+}
+
+.beauty-card-content {
+  padding: 18px;
+}
+
+.beauty-card-content h3 {
+  color: #173d30;
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+
+.beauty-card-content p {
+  color: #718075;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.beauty-card-content button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #174c35;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.beauty-card-content button:hover {
+  background: #103c2d;
+}
+
+@media (max-width: 950px) {
+  .beauty-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .beauty-page {
+    padding: 30px 15px;
+  }
+
+  .beauty-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .beauty-filters {
+    gap: 8px;
+  }
+
+  .beauty-filters button {
+    padding: 9px 15px;
+    font-size: 13px;
+  }
+}

@@ -1,15 +1,24 @@
 
 
 
+import { useState } from "react";
 import { Outlet, useNavigate, Link, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabase";
 import "./pages/SupplierDashboard.css";
+
 function SupplierLayout({ currentUser, onLogout, isAr = true }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-const location = useLocation();
+  const activeSection =
+    new URLSearchParams(location.search).get("section") || "dashboard";
 
-const activeSection = new URLSearchParams(location.search).get("section") || "dashboard";
+  const navigateAndClose = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
 
@@ -29,53 +38,81 @@ const activeSection = new URLSearchParams(location.search).get("section") || "da
 
   return (
     <div className="supplier-dashboard" dir={isAr ? "rtl" : "ltr"}>
-        <header className="supplier-header">
-  <Link to="/" className="supplier-brand">
-    <span className="supplier-brand-icon">♻</span>
+      <header className="supplier-header">
+        <Link to="/" className="supplier-brand">
+          <span className="supplier-brand-icon">♻</span>
 
-    <span className="supplier-brand-text">
-      <strong>صرفها</strong>
-      <small>Sarrafha</small>
-    </span>
-  </Link>
-</header>
+          <span className="supplier-brand-text">
+            <strong>صرفها</strong>
+            <small>Sarrafha</small>
+          </span>
+        </Link>
 
-      <aside className="supplier-sidebar">
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label={isAr ? "فتح القائمة" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
+        >
+          {isMobileMenuOpen ? "✕" : "☰"}
+        </button>
+      </header>
+
+      {isMobileMenuOpen && (
+        <button
+          className="mobile-menu-overlay"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-label={isAr ? "إغلاق القائمة" : "Close menu"}
+        />
+      )}
+
+      <aside
+        className={`supplier-sidebar ${
+          isMobileMenuOpen ? "mobile-menu-open" : ""
+        }`}
+      >
         <h3>{isAr ? "القائمة الرئيسية" : "MAIN MENU"}</h3>
 
         <button
           className={activeSection === "dashboard" ? "active" : ""}
-          onClick={() => navigate("/supplier-dashboard")}
+          onClick={() => navigateAndClose("/supplier-dashboard")}
         >
           {isAr ? "الرئيسية" : "Dashboard"}
         </button>
 
         <button
           className={activeSection === "products" ? "active" : ""}
-          onClick={() => navigate("/supplier-dashboard?section=products")}
+          onClick={() =>
+            navigateAndClose("/supplier-dashboard?section=products")
+          }
         >
           {isAr ? "منتجاتي" : "My Products"}
         </button>
 
-        <button
-          onClick={() => navigate("/add-product")}
-        >
+        <button onClick={() => navigateAndClose("/add-product")}>
           {isAr ? "إضافة منتج" : "Add Product"}
         </button>
 
         <button
           className={activeSection === "orders" ? "active" : ""}
-          onClick={() => navigate("/supplier-dashboard?section=orders")}
+          onClick={() =>
+            navigateAndClose("/supplier-dashboard?section=orders")
+          }
         >
           {isAr ? "طلبات العملاء" : "Customer Orders"}
         </button>
 
         <div className="sidebar-bottom-actions">
-          <button onClick={() => navigate("/")}>
+          <button onClick={() => navigateAndClose("/")}>
             {isAr ? "العودة للرئيسية" : "Back to Home"}
           </button>
 
-          <button onClick={handleLogout}>
+          <button
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              handleLogout();
+            }}
+          >
             {isAr ? "تسجيل الخروج" : "Logout"}
           </button>
         </div>
@@ -89,4 +126,3 @@ const activeSection = new URLSearchParams(location.search).get("section") || "da
 }
 
 export default SupplierLayout;
-
